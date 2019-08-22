@@ -1,4 +1,4 @@
-package com.xuanrui.tencentim;
+package com.xuanrui;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuanrui.tencentim.dao.MessageDao">
+    <resultMap id="messageResultMap" type="com.xuanrui.tencentim.model.dataobject.MessageDO">
+        <result column="message_id" property="messageId" jdbcType="BIGINT"/>
+        <result column="message_from" property="messageFrom" jdbcType="VARCHAR"/>
+        <result column="message_to" property="messageTo" jdbcType="VARCHAR"/>
+        <result column="ope" property="ope" jdbcType="VARCHAR"/>
+        <result column="message_type" property="type" jdbcType="VARCHAR"/>
+        <result column="text" property="text" jdbcType="VARCHAR"/>
+        <result column="resuri" property="resourceUrl" jdbcType="VARCHAR"/>
+        <result column="w" property="w" jdbcType="INTEGER"/>
+        <result column="h" property="h" jdbcType="INTEGER"/>
+        <result column="size" property="size" jdbcType="INTEGER"/>
+        <result column="dur" property="dur" jdbcType="INTEGER"/>
+        <result column="ext" property="ext" jdbcType="VARCHAR"/>
+        <result column="custom" property="custom" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="md5" property="md5" jdbcType="VARCHAR"/>
+        <result column="lng" property="lng" jdbcType="DECIMAL"/>
+        <result column="lat" property="lat" jdbcType="DECIMAL"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="VARCHAR"/>
+        <result column="gmt_creater" property="gmtCreater" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="sysMessageResultMap" type="com.xuanrui.tencentim.model.dataobject.MessageDO">
+        <result column="message_id" property="messageId" jdbcType="BIGINT"/>
+        <result column="message_from" property="messageFrom" jdbcType="VARCHAR"/>
+        <result column="message_to" property="messageTo" jdbcType="VARCHAR"/>
+        <result column="ope" property="ope" jdbcType="VARCHAR"/>
+        <result column="message_type" property="type" jdbcType="VARCHAR"/>
+        <result column="text" property="text" jdbcType="VARCHAR"/>
+        <result column="resourceUrl" property="resourceUrl" jdbcType="VARCHAR"/>
+        <result column="w" property="w" jdbcType="INTEGER"/>
+        <result column="h" property="h" jdbcType="INTEGER"/>
+        <result column="size" property="size" jdbcType="INTEGER"/>
+        <result column="dur" property="dur" jdbcType="INTEGER"/>
+        <result column="ext" property="ext" jdbcType="VARCHAR"/>
+        <result column="custom" property="custom" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="md5" property="md5" jdbcType="VARCHAR"/>
+        <result column="lng" property="lng" jdbcType="DECIMAL"/>
+        <result column="lat" property="lat" jdbcType="DECIMAL"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="VARCHAR"/>
+        <result column="gmt_creater" property="gmtCreater" jdbcType="BIGINT"/>
+        <result column="isWatched" property="isWatched" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        message_from, message_to, ope, message_type,
+        text, resuri, w, h, size, dur, ext, custom, title,
+        md5, lng, lat, gmt_creater, gmt_create, face_index
+    </sql>
+
+    <insert id="saveMessage" useGeneratedKeys="true" keyProperty="messageId">
+        INSERT INTO t_chatlog (
+        <include refid="Base_Column_List"/>
+        )
+        VALUES (
+        #{messageFrom,jdbcType=VARCHAR},
+        #{messageTo,jdbcType=VARCHAR},
+        #{ope,jdbcType=VARCHAR},
+        #{type,jdbcType=VARCHAR},
+        #{text,jdbcType=VARCHAR},
+        #{resourceUrl,jdbcType=VARCHAR},
+        #{w,jdbcType=INTEGER},
+        #{h,jdbcType=INTEGER},
+        #{size,jdbcType=INTEGER},
+        #{dur,jdbcType=VARCHAR},
+        #{ext,jdbcType=VARCHAR},
+        #{custom,jdbcType=VARCHAR},
+        #{title,jdbcType=VARCHAR},
+        #{md5,jdbcType=VARCHAR},
+        #{lng,jdbcType=DECIMAL},
+        #{lat,jdbcType=DECIMAL},
+        #{gmtCreater,jdbcType=BIGINT},
+        #{gmtCreate,jdbcType=BIGINT},
+        #{index}
+        )
+    </insert>
+
+    <insert id="saveBatchMassage" useGeneratedKeys="true" keyProperty="messageId">
+        INSERT INTO t_chatlog (
+        <include refid="Base_Column_List"/>
+        )
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (
+            #{item.messageFrom,jdbcType=VARCHAR},
+            #{item.messageTo,jdbcType=VARCHAR},
+            #{item.ope,jdbcType=VARCHAR},
+            #{item.type,jdbcType=VARCHAR},
+            #{item.text,jdbcType=VARCHAR},
+            #{item.resourceUrl,jdbcType=VARCHAR},
+            #{item.w,jdbcType=INTEGER},
+            #{item.h,jdbcType=INTEGER},
+            #{item.size,jdbcType=INTEGER},
+            #{item.dur,jdbcType=VARCHAR},
+            #{item.ext,jdbcType=VARCHAR},
+            #{item.custom,jdbcType=VARCHAR},
+            #{item.title,jdbcType=VARCHAR},
+            #{item.md5,jdbcType=VARCHAR},
+            #{item.lng,jdbcType=DECIMAL},
+            #{item.lat,jdbcType=DECIMAL},
+            #{item.gmtCreater,jdbcType=BIGINT},
+            #{item.gmtCreate,jdbcType=BIGINT},
+            #{item.index}
+            )
+        </foreach>
+    </insert>
+    <update id="sysMessage" parameterType="com.xuanrui.tencentim.model.query.MessageQuery">
+        UPDATE t_chatlog
+        SET custom = json_set(custom, '$.isWatched', 1)
+        WHERE message_id = #{messageId,jdbcType=VARCHAR}
+          AND gmt_create = (#{beginTime,jdbcType=VARCHAR})
+    </update>
+
+    <select id="listMessageFrom" resultMap="messageResultMap">
+        SELECT message_id,
+               message_from,
+               message_to,
+               ope,
+               message_type,
+               text,
+               resuri,
+               w,
+               h,
+               size,
+               dur,
+               ext,
+               custom,
+               title,
+               md5,
+               lng,
+               lat,
+               gmt_create,
+               face_index
+        FROM t_chatlog
+        WHERE message_from = #{messageFrom,jdbcType=VARCHAR}
+          AND message_to = #{messageTo,jdbcType=VARCHAR}
+          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+                      #{endTime,jdbcType=VARCHAR}
+    </select>
+
+    <select id="listMessageTo" resultMap="messageResultMap">
+        SELECT message_id,
+               message_from,
+               message_to,
+               ope,
+               message_type,
+               text,
+               resuri,
+               w,
+               h,
+               size,
+               dur,
+               ext,
+               custom,
+               title,
+               md5,
+               lng,
+               lat,
+               gmt_create,
+               face_index
+        FROM t_chatlog
+        WHERE message_from =
+              #{messageTo,jdbcType=VARCHAR}
+          AND message_to =
+              #{messageFrom,jdbcType=VARCHAR}
+          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+                      #{endTime,jdbcType=VARCHAR}
+    </select>
+
+    <select id="listSysMessageFrom" resultMap="sysMessageResultMap"
+            parameterType="com.xuanrui.tencentim.model.query.MessageQuery">
+        SELECT message_id,
+               message_from,
+               message_to,
+               ope,
+               message_type,
+               text,
+               resuri,
+               w,
+               h,
+               size,
+               dur,
+               ext,
+               custom,
+               title,
+               md5,
+               lng,
+               lat,
+               gmt_create,
+               face_index,
+               ifnull(json_extract(custom, '$.isWatched'), 0) isWatched
+        FROM t_chatlog
+        WHERE message_from = #{messageFrom,jdbcType=VARCHAR}
+          AND message_to = #{messageTo,jdbcType=VARCHAR}
+          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+                      #{endTime,jdbcType=VARCHAR}
+    </select>
+    <select id="listSysMessageTo" resultMap="sysMessageResultMap"
+            parameterType="com.xuanrui.tencentim.model.query.MessageQuery">
+        SELECT message_id,
+               message_from,
+               message_to,
+               ope,
+               message_type,
+               text,
+               resuri,
+               w,
+               h,
+               size,
+               dur,
+               ext,
+               custom,
+               title,
+               md5,
+               lng,
+               lat,
+               gmt_create,
+               face_index,
+               ifnull(json_extract(custom, '$.isWatched'), 0) isWatched
+        FROM t_chatlog
+        WHERE message_from =
+              #{messageTo,jdbcType=VARCHAR}
+          AND message_to =
+              #{messageFrom,jdbcType=VARCHAR}
+          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+                      #{endTime,jdbcType=VARCHAR}
+    </select>
+
+</mapper> 
