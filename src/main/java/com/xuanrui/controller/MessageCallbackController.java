@@ -133,9 +133,10 @@ public class MessageCallbackController {
                         message.setCustom(JSONObject.toJSONString(msgContent));
                         break;
                     case MSG_FILE:
-                        message.setResourceUrl(msgContent.getFileName());
+                        message.setResourceUrl(msgContent.getUrl());
                         message.setSize(msgContent.getFileSize());
                         message.setUuid(msgContent.getUUID());
+                        message.setTitle(msgContent.getFileName());
                         break;
                     default:
                 }

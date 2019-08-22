@@ -23,7 +23,7 @@
         <result column="gmt_creater" property="gmtCreater" jdbcType="BIGINT"/>
     </resultMap>
 
-    <resultMap id="sysMessageResultMap" type="com.xuanrui.tencentim.model.dataobject.MessageDO">
+    <resultMap id="sysMessageResultMap" type="com.xuanrui.model.dataobject.MessageDO">
         <result column="message_id" property="messageId" jdbcType="BIGINT"/>
         <result column="message_from" property="messageFrom" jdbcType="VARCHAR"/>
         <result column="message_to" property="messageTo" jdbcType="VARCHAR"/>
@@ -47,41 +47,59 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        message_from, message_to, ope, message_type,
+        message_id, message_from, message_to, ope, message_type,
         text, resuri, w, h, size, dur, ext, custom, title,
-        md5, lng, lat, gmt_creater, gmt_create, face_index
+        md5, lng, lat, gmt_creater, gmt_create, face_index, uuid
     </sql>
 
     <insert id="saveMessage" useGeneratedKeys="true" keyProperty="messageId">
-        INSERT INTO t_chatlog (
-        <include refid="Base_Column_List"/>
-        )
-        VALUES (
-        #{messageFrom,jdbcType=VARCHAR},
-        #{messageTo,jdbcType=VARCHAR},
-        #{ope,jdbcType=VARCHAR},
-        #{type,jdbcType=VARCHAR},
-        #{text,jdbcType=VARCHAR},
-        #{resourceUrl,jdbcType=VARCHAR},
-        #{w,jdbcType=INTEGER},
-        #{h,jdbcType=INTEGER},
-        #{size,jdbcType=INTEGER},
-        #{dur,jdbcType=VARCHAR},
-        #{ext,jdbcType=VARCHAR},
-        #{custom,jdbcType=VARCHAR},
-        #{title,jdbcType=VARCHAR},
-        #{md5,jdbcType=VARCHAR},
-        #{lng,jdbcType=DECIMAL},
-        #{lat,jdbcType=DECIMAL},
-        #{gmtCreater,jdbcType=BIGINT},
-        #{gmtCreate,jdbcType=BIGINT},
-        #{index}
-        )
+        INSERT INTO t_chatlog (message_from,
+                               message_to,
+                               ope,
+                               message_type,
+                               text,
+                               resuri,
+                               w,
+                               h,
+                               size,
+                               dur,
+                               ext,
+                               custom,
+                               title,
+                               md5,
+                               lng,
+                               lat,
+                               gmt_creater,
+                               gmt_create,
+                               face_index,
+                               uuid)
+        VALUES (#{messageFrom,jdbcType=VARCHAR},
+                #{messageTo,jdbcType=VARCHAR},
+                #{ope,jdbcType=VARCHAR},
+                #{type,jdbcType=VARCHAR},
+                #{text,jdbcType=VARCHAR},
+                #{resourceUrl,jdbcType=VARCHAR},
+                #{w,jdbcType=INTEGER},
+                #{h,jdbcType=INTEGER},
+                #{size,jdbcType=INTEGER},
+                #{dur,jdbcType=VARCHAR},
+                #{ext,jdbcType=VARCHAR},
+                #{custom,jdbcType=VARCHAR},
+                #{title,jdbcType=VARCHAR},
+                #{md5,jdbcType=VARCHAR},
+                #{lng,jdbcType=DECIMAL},
+                #{lat,jdbcType=DECIMAL},
+                #{gmtCreater,jdbcType=BIGINT},
+                #{gmtCreate,jdbcType=BIGINT},
+                #{index},
+                #{uuid})
     </insert>
 
     <insert id="saveBatchMassage" useGeneratedKeys="true" keyProperty="messageId">
         INSERT INTO t_chatlog (
-        <include refid="Base_Column_List"/>
+        message_from, message_to, ope, message_type,
+        text, resuri, w, h, size, dur, ext, custom, title,
+        md5, lng, lat, gmt_creater, gmt_create, face_index, uuid
         )
         VALUES
         <foreach collection="list" separator="," item="item">
@@ -104,11 +122,12 @@
             #{item.lat,jdbcType=DECIMAL},
             #{item.gmtCreater,jdbcType=BIGINT},
             #{item.gmtCreate,jdbcType=BIGINT},
-            #{item.index}
+            #{index},
+            #{uuid}
             )
         </foreach>
     </insert>
-    <update id="sysMessage" parameterType="com.xuanrui.tencentim.model.query.MessageQuery">
+    <update id="sysMessage" parameterType="com.xuanrui.model.query.MessageQuery">
         UPDATE t_chatlog
         SET custom = json_set(custom, '$.isWatched', 1)
         WHERE message_id = #{messageId,jdbcType=VARCHAR}
@@ -116,118 +135,50 @@
     </update>
 
     <select id="listMessageFrom" resultMap="messageResultMap">
-        SELECT message_id,
-               message_from,
-               message_to,
-               ope,
-               message_type,
-               text,
-               resuri,
-               w,
-               h,
-               size,
-               dur,
-               ext,
-               custom,
-               title,
-               md5,
-               lng,
-               lat,
-               gmt_create,
-               face_index
+        SELECT
+        <include refid="Base_Column_List"/>
         FROM t_chatlog
         WHERE message_from = #{messageFrom,jdbcType=VARCHAR}
-          AND message_to = #{messageTo,jdbcType=VARCHAR}
-          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
-                      #{endTime,jdbcType=VARCHAR}
+        AND message_to = #{messageTo,jdbcType=VARCHAR}
+        AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+        #{endTime,jdbcType=VARCHAR}
     </select>
 
     <select id="listMessageTo" resultMap="messageResultMap">
-        SELECT message_id,
-               message_from,
-               message_to,
-               ope,
-               message_type,
-               text,
-               resuri,
-               w,
-               h,
-               size,
-               dur,
-               ext,
-               custom,
-               title,
-               md5,
-               lng,
-               lat,
-               gmt_create,
-               face_index
+        SELECT
+        <include refid="Base_Column_List"/>
         FROM t_chatlog
         WHERE message_from =
-              #{messageTo,jdbcType=VARCHAR}
-          AND message_to =
-              #{messageFrom,jdbcType=VARCHAR}
-          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
-                      #{endTime,jdbcType=VARCHAR}
+        #{messageTo,jdbcType=VARCHAR}
+        AND message_to =
+        #{messageFrom,jdbcType=VARCHAR}
+        AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+        #{endTime,jdbcType=VARCHAR}
     </select>
 
     <select id="listSysMessageFrom" resultMap="sysMessageResultMap"
-            parameterType="com.xuanrui.tencentim.model.query.MessageQuery">
-        SELECT message_id,
-               message_from,
-               message_to,
-               ope,
-               message_type,
-               text,
-               resuri,
-               w,
-               h,
-               size,
-               dur,
-               ext,
-               custom,
-               title,
-               md5,
-               lng,
-               lat,
-               gmt_create,
-               face_index,
-               ifnull(json_extract(custom, '$.isWatched'), 0) isWatched
+            parameterType="com.xuanrui.model.query.MessageQuery">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,ifnull(json_extract(custom, '$.isWatched'), 0) isWatched
         FROM t_chatlog
         WHERE message_from = #{messageFrom,jdbcType=VARCHAR}
-          AND message_to = #{messageTo,jdbcType=VARCHAR}
-          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
-                      #{endTime,jdbcType=VARCHAR}
+        AND message_to = #{messageTo,jdbcType=VARCHAR}
+        AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+        #{endTime,jdbcType=VARCHAR}
     </select>
     <select id="listSysMessageTo" resultMap="sysMessageResultMap"
-            parameterType="com.xuanrui.tencentim.model.query.MessageQuery">
-        SELECT message_id,
-               message_from,
-               message_to,
-               ope,
-               message_type,
-               text,
-               resuri,
-               w,
-               h,
-               size,
-               dur,
-               ext,
-               custom,
-               title,
-               md5,
-               lng,
-               lat,
-               gmt_create,
-               face_index,
-               ifnull(json_extract(custom, '$.isWatched'), 0) isWatched
+            parameterType="com.xuanrui.model.query.MessageQuery">
+        SELECT
+        <include refid="Base_Column_List"/>
+        , ifnull(json_extract(custom, '$.isWatched'), 0) isWatched
         FROM t_chatlog
         WHERE message_from =
-              #{messageTo,jdbcType=VARCHAR}
-          AND message_to =
-              #{messageFrom,jdbcType=VARCHAR}
-          AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
-                      #{endTime,jdbcType=VARCHAR}
+        #{messageTo,jdbcType=VARCHAR}
+        AND message_to =
+        #{messageFrom,jdbcType=VARCHAR}
+        AND gmt_create BETWEEN #{beginTime,jdbcType=VARCHAR} AND
+        #{endTime,jdbcType=VARCHAR}
     </select>
 
 </mapper> 

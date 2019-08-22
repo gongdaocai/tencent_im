@@ -95,6 +95,21 @@ public class MessageDO {
      */
     private String gmtCreate;
 
+    /**
+     * 系统通知
+     *
+     * @return
+     */
+    private Byte isWatched;
+
+    public Byte getIsWatched() {
+        return isWatched;
+    }
+
+    public void setIsWatched(Byte isWatched) {
+        this.isWatched = isWatched;
+    }
+
     public Long getMessageId() {
         return messageId;
     }
