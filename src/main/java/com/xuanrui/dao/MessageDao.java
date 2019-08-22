@@ -1,8 +1,7 @@
 package com.xuanrui.dao;
 
-
-import com.xuanrui.tencentim.model.dataobject.MessageDO;
-import com.xuanrui.tencentim.model.query.MessageQuery;
+import com.xuanrui.model.dataobject.MessageDO;
+import com.xuanrui.model.query.MessageQuery;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

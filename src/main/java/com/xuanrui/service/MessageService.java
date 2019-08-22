@@ -1,8 +1,10 @@
 package com.xuanrui.service;
 
-import com.xuanrui.tencentim.common.utils.DateUtil;
-import com.xuanrui.tencentim.dao.MessageDao;
-import com.xuanrui.tencentim.model.dataobject.MessageDO;
+import com.xuanrui.common.utils.DateUtil;
+import com.xuanrui.common.utils.DateUtil;
+import com.xuanrui.dao.MessageDao;
+import com.xuanrui.model.dataobject.MessageDO;
+import com.xuanrui.model.dataobject.MessageDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,7 @@
 package com.xuanrui.model.query;
 
-import com.xuanrui.tencentim.model.request.Message;
+
+import com.xuanrui.model.request.Message;
 
 /**
  * @Description: 消息

@@ -1,6 +1,5 @@
 package com.xuanrui.service;
-
-import com.xuanrui.tencentim.common.TLSSigAPIv2;
+import com.xuanrui.common.TLSSigAPIv2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

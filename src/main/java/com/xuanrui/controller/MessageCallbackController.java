@@ -1,15 +1,15 @@
 package com.xuanrui.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xuanrui.tencentim.common.config.MyConfig;
-import com.xuanrui.tencentim.common.constant.CallBackType;
-import com.xuanrui.tencentim.common.constant.ImageFormat;
-import com.xuanrui.tencentim.common.constant.MessageType;
-import com.xuanrui.tencentim.model.response.CallBackResult;
-import com.xuanrui.tencentim.model.dataobject.MessageDO;
-import com.xuanrui.tencentim.model.response.CallBackDataResult;
-import com.xuanrui.tencentim.model.response.CommonResult;
-import com.xuanrui.tencentim.service.MessageService;
+import com.xuanrui.common.config.MyConfig;
+import com.xuanrui.common.constant.CallBackType;
+import com.xuanrui.common.constant.ImageFormat;
+import com.xuanrui.common.constant.MessageType;
+import com.xuanrui.model.dataobject.MessageDO;
+import com.xuanrui.model.response.CallBackDataResult;
+import com.xuanrui.model.response.CallBackResult;
+import com.xuanrui.model.response.CommonResult;
+import com.xuanrui.service.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;

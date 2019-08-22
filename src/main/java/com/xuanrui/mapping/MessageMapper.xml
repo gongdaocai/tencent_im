@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.xuanrui.tencentim.dao.MessageDao">
-    <resultMap id="messageResultMap" type="com.xuanrui.tencentim.model.dataobject.MessageDO">
+<mapper namespace="com.xuanrui.dao.MessageDao">
+    <resultMap id="messageResultMap" type="com.xuanrui.model.dataobject.MessageDO">
         <result column="message_id" property="messageId" jdbcType="BIGINT"/>
         <result column="message_from" property="messageFrom" jdbcType="VARCHAR"/>
         <result column="message_to" property="messageTo" jdbcType="VARCHAR"/>

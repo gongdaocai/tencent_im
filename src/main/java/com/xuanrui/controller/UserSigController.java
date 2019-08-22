@@ -1,7 +1,7 @@
 package com.xuanrui.controller;
 
 import com.xuanrui.common.core.model.result.Result;
-import com.xuanrui.tencentim.service.UserSigService;
+import com.xuanrui.service.UserSigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

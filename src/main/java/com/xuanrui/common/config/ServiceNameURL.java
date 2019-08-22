@@ -1,7 +1,8 @@
 package com.xuanrui.common.config;
 
-import com.xuanrui.tencentim.common.TLSSigAPIv2;
-import com.xuanrui.tencentim.common.constant.ServiceName;
+import com.xuanrui.common.TLSSigAPIv2;
+import com.xuanrui.common.TLSSigAPIv2;
+import com.xuanrui.common.constant.ServiceName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

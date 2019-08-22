@@ -2,8 +2,8 @@ package com.xuanrui.common;
 
 // 使用旧版本 base64 编解码实现增强兼容性
 
-import com.xuanrui.tencentim.common.config.MyConfig;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
+import com.xuanrui.common.config.MyConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sun.misc.BASE64Encoder;

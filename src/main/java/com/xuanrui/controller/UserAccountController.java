@@ -1,12 +1,12 @@
 package com.xuanrui.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xuanrui.common.constant.BusinessConstant;
 import com.xuanrui.common.core.model.result.BizException;
 import com.xuanrui.common.core.model.result.Result;
-import com.xuanrui.tencentim.common.constant.BusinessConstant;
-import com.xuanrui.tencentim.model.request.UserAccount;
-import com.xuanrui.tencentim.model.request.Friend;
-import com.xuanrui.tencentim.service.UserAccountService;
+import com.xuanrui.model.request.Friend;
+import com.xuanrui.model.request.UserAccount;
+import com.xuanrui.service.UserAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
