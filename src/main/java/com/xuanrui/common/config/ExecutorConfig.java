@@ -22,11 +22,11 @@ public class ExecutorConfig {
     public Executor asyncServiceExecutor(){
         ThreadPoolTaskExecutor executor=new ThreadPoolTaskExecutor();
         //配置核心线程数
-        executor.setCorePoolSize(100);
+        executor.setCorePoolSize(10);
         //配置最大线程数
-        executor.setMaxPoolSize(500);
+        executor.setMaxPoolSize(100);
         //配置队列大小
-        executor.setQueueCapacity(500);
+        executor.setQueueCapacity(200);
         //配置线程池中的线程名称前缀
         executor.setThreadNamePrefix("thread-");
         // rejection-policy：当pool已经达到max size的时候，如何处理新任务
