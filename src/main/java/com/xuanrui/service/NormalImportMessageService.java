@@ -3,7 +3,7 @@ package com.xuanrui.service;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xuanrui.dao.MessageDao;
+import com.xuanrui.dao.MessageImportDao;
 import com.xuanrui.model.request.Message;
 import com.xuanrui.model.request.UserAccount;
 import org.slf4j.Logger;
@@ -16,17 +16,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
- * @Description: 导入数据
+ * @Description: 数据导入单线程
  * @Author: gdc
  * @Date: 2019-08-23 10:25
  **/
 @Service
-public class ImportMessageNoraml {
+public class NormalImportMessageService {
     @Autowired
-    private MessageDao messageDao;
+    private MessageImportDao messageImportDao;
 
     @Autowired
     private MessageSendService sendService;
@@ -34,13 +33,13 @@ public class ImportMessageNoraml {
     @Autowired
     private UserAccountService userAccountService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(com.xuanrui.service.MessageImportService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(com.xuanrui.service.AsyncMessageImportService.class);
 
     public void copyMessage() {
         Long start = System.currentTimeMillis();
         List<Long> successList;
         List<Long> errorList;
-        List<Message> messageList = new ArrayList<>();
+        List<Message> messageList;
         int total = 0;
         int errorTotal = 0;
         int successTotal = 0;
@@ -50,7 +49,7 @@ public class ImportMessageNoraml {
             int pageNum = 1;
             while (flag) {
                 PageHelper.startPage(pageNum, 100);
-                messageList = messageDao.copydata();
+                messageList = messageImportDao.listMessage();
                 if (!CollectionUtils.isEmpty(messageList)) {
                     successList = new ArrayList<>();
                     errorList = new ArrayList<>();
@@ -80,14 +79,14 @@ public class ImportMessageNoraml {
                     //输出到文件
                     if (!CollectionUtils.isEmpty(errorList)) {
                         try {
-                            messageDao.saveError(errorList);
+                            messageImportDao.saveErrorMessage(errorList);
                         } catch (Exception e) {
                             LOGGER.error("<<<===第{}页数据--保存同步失败数据--失败 errorList:{}", pageNum, JSONObject.toJSON(errorList), e);
                         }
                     }
                     if (!CollectionUtils.isEmpty(successList)) {
                         try {
-                            messageDao.saveSuccess(successList);
+                            messageImportDao.saveSuccessMessage(successList);
                         } catch (Exception e) {
                             LOGGER.error("<<<===-第{}页数据--保存同步成功数据--失败 errorList:{}", pageNum, JSONObject.toJSON(successList), e);
                         }
@@ -112,19 +111,72 @@ public class ImportMessageNoraml {
         LOGGER.info("<<<====同步结束 耗时{}秒", (System.currentTimeMillis() - start) / 1000);
     }
 
+
     public void importUser() {
-        Set<String> userList1 = messageDao.listUserFrom();
-        Set<String> userList2 = messageDao.listUserTo();
-        userList1.addAll(userList2);
-        if (userList1.size() > 0) {
-            LOGGER.info("<<<===用户账户-同步开始--本次同步总数{}", userList1.size());
-            UserAccount userAccount = new UserAccount();
-            userAccount.setPhone(JSONObject.toJSONString(userList1));
-            Boolean account = userAccountService.createAccount(userAccount);
-            if (account) {
-                LOGGER.info("<<<==同步用户成功 共同步总数 :{}", userList1.size());
+        List<UserAccount> userAccountList;
+        Long start = System.currentTimeMillis();
+        List<String> successList;
+        List<String> errorList;
+        int total = 0;
+        int errorTotal = 0;
+        int successTotal = 0;
+        PageInfo pageInfo;
+        boolean flag = true;
+        int pageNum = 1;
+        try {
+            while (flag) {
+                PageHelper.startPage(pageNum, 500);
+                userAccountList = messageImportDao.listUserInfo();
+                if (!CollectionUtils.isEmpty(userAccountList)) {
+                    successList = new ArrayList<>();
+                    errorList = new ArrayList<>();
+                    pageInfo = new PageInfo(userAccountList);
+                    for (UserAccount account : userAccountList) {
+                        try {
+                            if (userAccountService.createAccount(account)) {
+                                successList.add(account.getPhone());
+                            } else {
+                                errorList.add(account.getPhone());
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===第{}页数据--同步失败 用户:{} reason:{}", pageNum, JSONObject.toJSON(account), e);
+                            errorList.add(account.getPhone());
+                        }
+                    }
+                    LOGGER.info("<<<===第{}页数据--同步结束 同步用户总数 :{} 同步失败总数:{}", pageNum, userAccountList.size(), errorList.size());
+                    //输出到文件
+                    if (!CollectionUtils.isEmpty(errorList)) {
+                        try {
+                            messageImportDao.saveErrorUser(errorList);
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===第{}页数据--保存同步失败数据--失败 errorList:{}", pageNum, JSONObject.toJSON(errorList), e);
+                        }
+                    }
+                    if (!CollectionUtils.isEmpty(successList)) {
+                        try {
+                            messageImportDao.saveSuccessUser(successList);
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===-第{}页数据--保存同步成功数据--失败 errorList:{}", pageNum, JSONObject.toJSON(successList), e);
+                        }
+                    }
+                    total = total + userAccountList.size();
+                    errorTotal = errorTotal + errorList.size();
+                    successTotal = successTotal + successList.size();
+                    if (pageInfo.isHasNextPage()) {
+                        pageNum = pageInfo.getNextPage();
+                    } else {
+                        flag = false;
+                    }
+
+                } else {
+                    flag = false;
+                }
             }
+            LOGGER.info("<<<===所有数据--同步结束 同步用户总数 :{} 同步成功总数:{} 同步失败总数:{}", total, successTotal, errorTotal);
+        } catch (Exception e) {
+            LOGGER.error("<<<<=====同步用户数据-失败 reason:{}", e);
         }
+        LOGGER.info("<<<====同步结束 耗时{}秒", (System.currentTimeMillis() - start) / 1000);
     }
 
 

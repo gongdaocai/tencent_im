@@ -105,7 +105,7 @@ public class MessageSendService {
      * @param message 消息原数据
      * @return 封装后的Rest请求消息Body
      */
-    private List<Map<String, Object>> msgBody(Message message) {
+    public List<Map<String, Object>> msgBody(Message message) {
         List<Map<String, Object>> msgList = new ArrayList<>(8);
         if (!CollectionUtils.isEmpty(message.getMsgList())) {
             for (Message x : message.getMsgList()) {
@@ -172,58 +172,5 @@ public class MessageSendService {
         }
         msgMap.put("MsgContent", content);
         return msgMap;
-    }
-
-    /**
-     * 发送消息
-     *
-     * @param message 消息数据
-     * @return Boolean
-     */
-    @Async("asyncServiceExecutor")
-    public Future<Map<String, Object>> importMessage(CountDownLatch countDownLatch, Message message) {
-        boolean result;
-        //LOGGER.info("<<<<<======线程{}执行", Thread.currentThread().getName() + "-" + Thread.currentThread().getId());
-        Map<String, Object> dataMap = new HashMap<>(8);
-        String url;
-        dataMap.put("SyncOtherMachine", message.getSyncOtherMachine());
-        dataMap.put("From_Account", message.getMessageFrom());
-        if (message.getMessageTo().startsWith(BusinessConstant.PREFIX) && message.getMessageTo().endsWith(BusinessConstant.SUFFIX)) {
-            JSONArray jsonArray = JSONArray.parseArray(message.getMessageTo());
-            if (CollectionUtils.isEmpty(jsonArray)) {
-                throw new BizException(BusinessConstant.MSG_RECEIVER_EMPTY);
-            }
-            if (jsonArray.size() > BusinessConstant.MAX_SEND_COUNT) {
-                throw new BizException(BusinessConstant.MSG_SEND_MAX_LIMIT);
-            }
-            url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND_BATCH);
-            dataMap.put("To_Account", jsonArray);
-        } else {
-            if (message.getMsgTimeStamp() != null && message.getSyncFromOldSystem() != null) {
-                url = serviceNameURL.getServiceUrl(ServiceName.MSG_IMPORT);
-                dataMap.put("SyncFromOldSystem", message.getSyncFromOldSystem());
-            } else {
-                url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND);
-            }
-            dataMap.put("To_Account", message.getMessageTo());
-        }
-
-        dataMap.put("MsgRandom", RandomUtils.nextInt());
-        dataMap.put("MsgTimeStamp", message.getMsgTimeStamp() == null ? LocalDateTime.now().toEpochSecond(ZoneOffset.of("+8")) : message.getMsgTimeStamp());
-        dataMap.put("MsgBody", msgBody(message));
-
-        CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(url, dataMap), CommonResult.class);
-//        LOGGER.info(JSONObject.toJSONString(commonResult));
-        if (commonResult == null || !commonResult.isSuccess()) {
-            LOGGER.error("<<<===发送消息-失败 params:{} reason:{errorCode={} errorInfo={}}", JSONObject.toJSONString(dataMap), commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
-            result = false;
-        } else {
-            result = true;
-        }
-
-        Map<String, Object> map = new HashMap(2);
-        map.put("id", message.getMessageId());
-        map.put("success", result);
-        return new AsyncResult<>(map);
     }
 }

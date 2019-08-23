@@ -61,13 +61,4 @@ public interface MessageDao {
 	List<MessageDO> listSysMessageTo(MessageQuery MessageDO);
 
 	int sysMessage(MessageQuery MessageDO);
-	Integer getTotal();
-	List<Message> copydata();
-
-	Set<String> listUserFrom();
-	Set<String> listUserTo();
-
-	void saveError(@Param("errorList")List<Long> errorList);
-
-	void saveSuccess(@Param("successList")List<Long> successList);
 }

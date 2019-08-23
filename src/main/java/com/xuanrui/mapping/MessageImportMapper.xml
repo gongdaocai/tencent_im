@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuanrui.dao.MessageImportDao">
+    <select id="listMessage" resultType="com.xuanrui.model.request.Message">
+
+        SELECT message_id messageId,message_from messageFrom, message_to messageTo, message_type type, TEXT text,
+        gmt_create locationDesc
+        FROM t_chatlog_201908
+        WHERE message_type = 0
+        AND message_from not in ('88000', '88100', '88200', '88300', '88400', '88001')
+        <!-- AND gmt_create >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:%m:%s')-->
+    </select>
+    <insert id="saveErrorMessage">
+        insert ignore into error_record_message(messageId)
+        values
+        <foreach collection="errorList" separator="," item="item">
+            (
+            #{item}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="saveSuccessMessage">
+        insert ignore into success_record_message(messageId)
+        values
+        <foreach collection="successList" separator="," item="item">
+            (
+            #{item}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="saveErrorUser">
+        insert ignore into error_record_user (phone)
+        values
+        <foreach collection="errorList" separator="," item="item">
+            (
+            #{item}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="saveSuccessUser">
+        insert ignore into success_record_user(phone)
+        values
+        <foreach collection="successList" separator="," item="item">
+            (
+            #{item}
+            )
+        </foreach>
+    </insert>
+    <select id="listUserInfo" resultType="com.xuanrui.model.request.UserAccount">
+        select phone, nick_name nickName, picture_url faceUrl
+        from user_info
+    </select>
+</mapper> 
