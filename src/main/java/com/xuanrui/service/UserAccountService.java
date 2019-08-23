@@ -43,7 +43,7 @@ public class UserAccountService {
     private HttpUtils httpUtils;
 
     @Autowired
-    private UserAccountService(ServiceNameURL serviceNameURL, HttpUtils httpUtils) {
+    public UserAccountService(ServiceNameURL serviceNameURL, HttpUtils httpUtils) {
         this.httpUtils = httpUtils;
         this.serviceNameURL = serviceNameURL;
     }

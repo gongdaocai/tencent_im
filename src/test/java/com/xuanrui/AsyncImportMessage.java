@@ -163,16 +163,21 @@ public class AsyncImportMessage {
                             countDownLatch.countDown();
                         }
                     }
+
                     countDownLatch.await();
                     //批量处理本次结果
-                    for (Future<Map<String, Object>> future : futures) {
-                        longBooleanMap = future.get();
-                        if ((Boolean) longBooleanMap.get("success")) {
-                            successList.add((String) longBooleanMap.get("phone"));
-                        } else {
-                            LOGGER.error("<<<===第{}页数据--同步失败 用户:{} reason:{}", pageNum, longBooleanMap.get("id"), "查第三方返回返回日志");
-                            errorList.add((String) longBooleanMap.get("phone"));
 
+                    for (Future<Map<String, Object>> future : futures) {
+                        try {
+                            longBooleanMap = future.get();
+                            if ((Boolean) longBooleanMap.get("success")) {
+                                successList.add((String) longBooleanMap.get("phone"));
+                            } else {
+                                LOGGER.error("<<<===第{}页数据--同步失败 用户:{} reason:{}", pageNum, longBooleanMap.get("id"), "查第三方返回返回日志");
+                                errorList.add((String) longBooleanMap.get("phone"));
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===第{}页数据--批量处理结果失败 reason:{}", pageNum, e);
                         }
                     }
                     LOGGER.info("<<<===第{}页数据--同步结束 同步用户总数 :{} 同步失败总数:{}", pageNum, userAccountList.size(), errorList.size());
