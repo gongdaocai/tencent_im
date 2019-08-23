@@ -53,4 +53,9 @@
         select phone, nick_name nickName, picture_url faceUrl
         from user_info
     </select>
+    <insert id="mockCreateAccount">
+        insert into user_account (phone, nick_name, face_url)
+        values (#{phone}, #{nickName}, #{faceUrl})
+    </insert>
+
 </mapper> 

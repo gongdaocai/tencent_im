@@ -27,4 +27,6 @@ public interface MessageImportDao {
     void saveSuccessUser(@Param("successList") List<String> successList);
 
     List<Message> listMessage();
+
+    void mockCreateAccount(UserAccount userAccount);
 }

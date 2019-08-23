@@ -6,6 +6,7 @@ import com.xuanrui.common.core.model.result.BizException;
 import com.xuanrui.common.core.model.result.Result;
 import com.xuanrui.model.request.Friend;
 import com.xuanrui.model.request.UserAccount;
+import com.xuanrui.model.response.CommonResult;
 import com.xuanrui.service.UserAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,6 @@ public class UserAccountController {
             LOGGER.error("<<<<====导入账号-失败 params:{} reason:{}", JSONObject.toJSONString(userAccount), e);
             return Result.createError();
         }
-
     }
 
     /**
@@ -150,6 +150,29 @@ public class UserAccountController {
             LOGGER.error("<<<<====添加好友-失败 params:{} reason:{}", JSONObject.toJSONString(friend), e);
             return Result.createError();
         }
-
     }
+
+
+    /**
+     * 模拟腾讯创建账号
+     *
+     * @param userAccount 用户数据
+     * @return Result
+     */
+    @PostMapping(value = "mockCreateAccount")
+    public CommonResult mockCreateAccount(@RequestBody UserAccount userAccount) {
+        try {
+            if (userAccount == null || userAccount.getPhone() == null) {
+                return CommonResult.createFailed(BusinessConstant.PARAMTER_EMTTY);
+            }
+            userAccountService.mockCreateAccount(userAccount);
+            LOGGER.info("<<<<====导入账号-成功 params:{}", JSONObject.toJSONString(userAccount));
+            return CommonResult.createSuccess();
+
+        } catch (Exception e) {
+            LOGGER.error("<<<<====导入账号-失败 params:{} reason:{}", JSONObject.toJSONString(userAccount), e);
+            return CommonResult.createFailed();
+        }
+    }
+
 }

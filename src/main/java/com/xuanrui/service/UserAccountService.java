@@ -10,6 +10,7 @@ import com.xuanrui.common.constant.Gender;
 import com.xuanrui.common.constant.ServiceName;
 import com.xuanrui.common.core.model.result.BizException;
 import com.xuanrui.common.utils.HttpUtils;
+import com.xuanrui.dao.MessageImportDao;
 import com.xuanrui.model.request.Friend;
 import com.xuanrui.model.request.UserAccount;
 import com.xuanrui.model.response.CommonResult;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -29,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -41,11 +44,13 @@ public class UserAccountService {
 
     private ServiceNameURL serviceNameURL;
     private HttpUtils httpUtils;
+    private MessageImportDao messageImportDao;
 
     @Autowired
-    public UserAccountService(ServiceNameURL serviceNameURL, HttpUtils httpUtils) {
+    public UserAccountService(ServiceNameURL serviceNameURL, HttpUtils httpUtils, MessageImportDao messageImportDao) {
         this.httpUtils = httpUtils;
         this.serviceNameURL = serviceNameURL;
+        this.messageImportDao=messageImportDao;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonResult.class);
@@ -338,5 +343,10 @@ public class UserAccountService {
             }
         }
         return returnMap;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void mockCreateAccount(UserAccount userAccount) {
+        messageImportDao.mockCreateAccount(userAccount);
     }
 }

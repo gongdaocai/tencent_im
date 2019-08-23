@@ -53,6 +53,10 @@ public class CommonResult {
         return new CommonResult("FAIL", 1, "FAIL");
     }
 
+    public static CommonResult createFailed(String errorInfo) {
+        return new CommonResult("FAIL", 1, errorInfo);
+    }
+
     public String getActionStatus() {
         return ActionStatus;
     }
