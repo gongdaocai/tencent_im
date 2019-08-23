@@ -2,24 +2,22 @@ package com.xuanrui.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.xuanrui.common.constant.BusinessConstant;
-import com.xuanrui.common.constant.MessageType;
-import com.xuanrui.common.constant.ServiceName;
-import com.xuanrui.common.core.model.result.BizException;
 import com.xuanrui.common.config.ServiceNameURL;
 import com.xuanrui.common.constant.BusinessConstant;
 import com.xuanrui.common.constant.MessageType;
 import com.xuanrui.common.constant.ServiceName;
+import com.xuanrui.common.core.model.result.BizException;
 import com.xuanrui.common.utils.HttpUtils;
-import com.xuanrui.model.response.CommonResult;
+import com.xuanrui.dao.MessageDao;
 import com.xuanrui.model.request.Message;
 import com.xuanrui.model.response.CommonResult;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
@@ -29,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 /**
  * @Description: 后台服务端发送消息
@@ -40,11 +40,15 @@ public class MessageSendService {
 
     private ServiceNameURL serviceNameURL;
     private HttpUtils httpUtils;
+    private MessageDao messageDao;
+    private UserAccountService userAccountService;
 
     @Autowired
-    public MessageSendService(ServiceNameURL serviceNameURL, HttpUtils httpUtils) {
+    public MessageSendService(ServiceNameURL serviceNameURL, HttpUtils httpUtils, MessageDao messageDao, UserAccountService userAccountService) {
         this.httpUtils = httpUtils;
         this.serviceNameURL = serviceNameURL;
+        this.messageDao = messageDao;
+        this.userAccountService = userAccountService;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSendService.class);
@@ -56,8 +60,8 @@ public class MessageSendService {
      * @param message 消息数据
      * @return Boolean
      */
-    @Transactional(rollbackFor = Exception.class)
     public Boolean senMessage(Message message) {
+        LOGGER.info("<<<<<======线程{}执行", Thread.currentThread().getName() + "-" + Thread.currentThread().getId());
         Map<String, Object> dataMap = new HashMap<>(8);
         String url;
         dataMap.put("SyncOtherMachine", message.getSyncOtherMachine());
@@ -87,6 +91,7 @@ public class MessageSendService {
         dataMap.put("MsgBody", msgBody(message));
 
         CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(url, dataMap), CommonResult.class);
+//        LOGGER.info(JSONObject.toJSONString(commonResult));
         if (commonResult == null || !commonResult.isSuccess()) {
             LOGGER.error("<<<===发送消息-失败 params:{} reason:{errorCode={} errorInfo={}}", JSONObject.toJSONString(dataMap), commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
             return false;
@@ -167,5 +172,58 @@ public class MessageSendService {
         }
         msgMap.put("MsgContent", content);
         return msgMap;
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param message 消息数据
+     * @return Boolean
+     */
+    @Async("asyncServiceExecutor")
+    public Future<Map<String, Object>> importMessage(CountDownLatch countDownLatch, Message message) {
+        boolean result;
+        //LOGGER.info("<<<<<======线程{}执行", Thread.currentThread().getName() + "-" + Thread.currentThread().getId());
+        Map<String, Object> dataMap = new HashMap<>(8);
+        String url;
+        dataMap.put("SyncOtherMachine", message.getSyncOtherMachine());
+        dataMap.put("From_Account", message.getMessageFrom());
+        if (message.getMessageTo().startsWith(BusinessConstant.PREFIX) && message.getMessageTo().endsWith(BusinessConstant.SUFFIX)) {
+            JSONArray jsonArray = JSONArray.parseArray(message.getMessageTo());
+            if (CollectionUtils.isEmpty(jsonArray)) {
+                throw new BizException(BusinessConstant.MSG_RECEIVER_EMPTY);
+            }
+            if (jsonArray.size() > BusinessConstant.MAX_SEND_COUNT) {
+                throw new BizException(BusinessConstant.MSG_SEND_MAX_LIMIT);
+            }
+            url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND_BATCH);
+            dataMap.put("To_Account", jsonArray);
+        } else {
+            if (message.getMsgTimeStamp() != null && message.getSyncFromOldSystem() != null) {
+                url = serviceNameURL.getServiceUrl(ServiceName.MSG_IMPORT);
+                dataMap.put("SyncFromOldSystem", message.getSyncFromOldSystem());
+            } else {
+                url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND);
+            }
+            dataMap.put("To_Account", message.getMessageTo());
+        }
+
+        dataMap.put("MsgRandom", RandomUtils.nextInt());
+        dataMap.put("MsgTimeStamp", message.getMsgTimeStamp() == null ? LocalDateTime.now().toEpochSecond(ZoneOffset.of("+8")) : message.getMsgTimeStamp());
+        dataMap.put("MsgBody", msgBody(message));
+
+        CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(url, dataMap), CommonResult.class);
+//        LOGGER.info(JSONObject.toJSONString(commonResult));
+        if (commonResult == null || !commonResult.isSuccess()) {
+            LOGGER.error("<<<===发送消息-失败 params:{} reason:{errorCode={} errorInfo={}}", JSONObject.toJSONString(dataMap), commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
+            result = false;
+        } else {
+            result = true;
+        }
+
+        Map<String, Object> map = new HashMap(2);
+        map.put("id", message.getMessageId());
+        map.put("success", result);
+        return new AsyncResult<>(map);
     }
 }

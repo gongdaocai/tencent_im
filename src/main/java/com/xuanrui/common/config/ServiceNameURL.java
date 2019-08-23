@@ -19,7 +19,7 @@ public class ServiceNameURL {
      */
     private static long expire = 5184000;
 
-    private static String adminUserSig = "eJw1jt0KgjAYQN9lt4V8bjZS6CLojyghC8nuRlvyZTPdlgjRuydal4fDgfMmp93RU22FRpGIw7jn\n" + "RhkSEeoBGdjKQlQVShL5AQANOIRsMChV6fCGfSCkxhKtM8I9zT-FvDMpG1kd5*ukXoX7pi2Uq3V6\n" + "lxC-Lradn5PDY7ndLKYsY9fZL3SouyN-wjkFnzL2*QJmfDPw";
+    private static String adminUserSig = "eJw1jtEKgjAYhd9l16H-plsqdCF6UVQQGImXo834EU3nGlH07onW5Tnf*eC8yflQePrZo9Ek4TQKAWA1l04bkhDmAVnyqBrZ96hIQqcRCwXEwUJQ6c5ijbMgVYsdjtZIezd-FW8TWZutrGhYZjv-5cqsKFrn1yZw*TEe0kuzr*CUX9OhelDY-ESL7XSLciE4C1gEny-sSTQb";
 
     public String getServiceUrl(ServiceName serviceName) {
         switch (serviceName) {
@@ -70,6 +70,7 @@ public class ServiceNameURL {
         String sig = tlsSigAPIv2.genSig(myConfig.getAdministrator(), expire);
         if (!StringUtils.isEmpty(sig)) {
             adminUserSig = sig;
+//            System.out.println(adminUserSig);
         }
     }
 

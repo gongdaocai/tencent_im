@@ -86,7 +86,10 @@ public class UserAccountService {
             LOGGER.error("<<<===导入账号-失败 params:{} reason:{errorCode={} errorInfo={}}", JSONObject.toJSONString(userAccount), commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
             return false;
         }
-        //todo 更新本地用户 可以不做
+        //
+        if (!CollectionUtils.isEmpty(commonResult.getFailAccounts())) {
+            LOGGER.error("导入失败账号 {}", JSONObject.toJSONString(commonResult.getFailAccounts()));
+        }
         return true;
     }
 

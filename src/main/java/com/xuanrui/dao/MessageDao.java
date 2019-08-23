@@ -2,9 +2,12 @@ package com.xuanrui.dao;
 
 import com.xuanrui.model.dataobject.MessageDO;
 import com.xuanrui.model.query.MessageQuery;
+import com.xuanrui.model.request.Message;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Description: 保存消息
@@ -58,4 +61,13 @@ public interface MessageDao {
 	List<MessageDO> listSysMessageTo(MessageQuery MessageDO);
 
 	int sysMessage(MessageQuery MessageDO);
+	Integer getTotal();
+	List<Message> copydata();
+
+	Set<String> listUserFrom();
+	Set<String> listUserTo();
+
+	void saveError(@Param("errorList")List<Long> errorList);
+
+	void saveSuccess(@Param("successList")List<Long> successList);
 }

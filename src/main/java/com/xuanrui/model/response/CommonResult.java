@@ -1,5 +1,7 @@
 package com.xuanrui.model.response;
 
+import java.util.List;
+
 /**
  * @Description: Rest请求返回
  * @Author: gdc
@@ -22,6 +24,17 @@ public class CommonResult {
     private String ErrorInfo;
 
     private String ErrorDisplay;
+
+
+    private List<String> FailAccounts;
+
+    public List<String> getFailAccounts() {
+        return FailAccounts;
+    }
+
+    public void setFailAccounts(List<String> failAccounts) {
+        FailAccounts = failAccounts;
+    }
 
     public CommonResult() {
     }

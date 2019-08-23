@@ -181,4 +181,49 @@
         #{endTime,jdbcType=VARCHAR}
     </select>
 
+    <select id="copydata" resultType="com.xuanrui.model.request.Message">
+        SELECT message_id messageId,message_from messageFrom, message_to messageTo, message_type type, TEXT text,
+        gmt_create locationDesc
+        FROM t_chatlog_201908
+        WHERE message_type = 0
+        AND message_from  not in ('88000', '88100', '88200', '88300', '88400', '88001')
+        <!-- AND gmt_create >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:%m:%s')-->
+
+    </select>
+    <select id="listUserFrom" resultType="java.lang.String">
+        SELECT message_from FROM t_chatlog_201908
+        WHERE message_type=0 AND message_from not in ('88000', '88100', '88200', '88300', '88400', '88001')
+        <!-- gmt_create>= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY),'%Y-%m-%d %H:%m:%s')-->
+    </select>
+
+    <select id="listUserTo" resultType="java.lang.String">
+        SELECT message_to FROM t_chatlog_201908
+        WHERE message_type=0 AND message_to not in ('88000', '88100', '88200', '88300', '88400', '88001')
+        <!--   gmt_create>= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY),'%Y-%m-%d %H:%m:%s')-->
+    </select>
+    <select id="getTotal" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM `t_chatlog_201908`
+        WHERE message_type = 0
+          AND message_from not in ('88000', '88100', '88200', '88300', '88400', '88001')
+    </select>
+    <insert id="saveError">
+        insert ignore into error_record (messageId)
+        values
+        <foreach collection="errorList" separator="," item="item">
+            (
+            #{item}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="saveSuccess">
+        insert ignore into success_record(messageId)
+        values
+        <foreach collection="successList" separator="," item="item">
+            (
+            #{item}
+            )
+        </foreach>
+    </insert>
 </mapper> 
