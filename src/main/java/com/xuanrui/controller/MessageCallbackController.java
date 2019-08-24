@@ -55,10 +55,10 @@ public class MessageCallbackController {
         String msgData = null;
         try {
             CallBackResult callback = getQuery(request);
-            msgData = getBody(request);
             //验证应用id是否一致
             if (callback != null && callback.getCallBackCommand() != null && String.valueOf(myConfig.getAppId()).equals(callback.getSdkAppId())) {
                 MessageDO messageDO = null;
+                msgData = getBody(request);
                 //根据回调的类型分别解析消息数据
                 switch (CallBackType.getCallBackType(callback.getCallBackCommand())) {
                     case C2C_CallbackAfterSendMsg:
@@ -103,7 +103,7 @@ public class MessageCallbackController {
                         message.setText(msgContent.getText());
                         break;
                     case MSG_FACE:
-                        message.setIndex(msgContent.getIndex());
+                        message.setFaceIndex(msgContent.getIndex());
                         message.setTitle(msgContent.getData());
                         break;
                     case MSG_LOCATION:
@@ -138,6 +138,8 @@ public class MessageCallbackController {
                         message.setUuid(msgContent.getUUID());
                         message.setTitle(msgContent.getFileName());
                         break;
+                    case MSG_OTHER:
+                        break;
                     default:
                 }
 
@@ -156,10 +158,10 @@ public class MessageCallbackController {
         if (queryString != null) {
             String[] split = queryString.split("&");
             String[] split1;
-            if (split != null && split.length > 0) {
+            if (split.length > 0) {
                 for (String s : split) {
                     split1 = s.split("=");
-                    if (split1 != null && split1.length == 2) {
+                    if (split1.length == 2) {
                         if ("CallbackCommand".endsWith(split1[0])) {
                             callBack.setCallBackCommand(split1[1]);
                         } else if ("SdkAppid".endsWith(split1[0])) {

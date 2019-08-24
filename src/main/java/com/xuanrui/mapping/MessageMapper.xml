@@ -20,7 +20,7 @@
         <result column="lng" property="lng" jdbcType="DECIMAL"/>
         <result column="lat" property="lat" jdbcType="DECIMAL"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="VARCHAR"/>
-        <result column="gmt_creater" property="gmtCreater" jdbcType="BIGINT"/>
+        <result column="gmt_creater" property="gmtCreator" jdbcType="BIGINT"/>
     </resultMap>
 
     <resultMap id="sysMessageResultMap" type="com.xuanrui.model.dataobject.MessageDO">
@@ -42,7 +42,7 @@
         <result column="lng" property="lng" jdbcType="DECIMAL"/>
         <result column="lat" property="lat" jdbcType="DECIMAL"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="VARCHAR"/>
-        <result column="gmt_creater" property="gmtCreater" jdbcType="BIGINT"/>
+        <result column="gmt_creater" property="gmtCreator" jdbcType="BIGINT"/>
         <result column="isWatched" property="isWatched" jdbcType="TINYINT"/>
     </resultMap>
 
@@ -89,9 +89,9 @@
                 #{md5,jdbcType=VARCHAR},
                 #{lng,jdbcType=DECIMAL},
                 #{lat,jdbcType=DECIMAL},
-                #{gmtCreater,jdbcType=BIGINT},
+                #{gmtCreator,jdbcType=BIGINT},
                 #{gmtCreate,jdbcType=BIGINT},
-                #{index},
+                #{faceIndex},
                 #{uuid})
     </insert>
 
@@ -120,9 +120,9 @@
             #{item.md5,jdbcType=VARCHAR},
             #{item.lng,jdbcType=DECIMAL},
             #{item.lat,jdbcType=DECIMAL},
-            #{item.gmtCreater,jdbcType=BIGINT},
+            #{item.gmtCreator,jdbcType=BIGINT},
             #{item.gmtCreate,jdbcType=BIGINT},
-            #{index},
+            #{faceIndex},
             #{uuid}
             )
         </foreach>
