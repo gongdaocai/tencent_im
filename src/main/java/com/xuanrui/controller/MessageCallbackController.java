@@ -65,6 +65,7 @@ public class MessageCallbackController {
                         messageDO = parseData(msgData);
                         break;
                     case Group_CallbackBeforeSendMsg:
+                        //TODO 群组消息回调保存
                         break;
                     default:
                 }
@@ -81,6 +82,12 @@ public class MessageCallbackController {
         return CommonResult.createSuccess();
     }
 
+    /**
+     * 解析C2C单发回调消息体
+     *
+     * @param msgData 第三方回调数据
+     * @return 数据库DO
+     */
     private MessageDO parseData(String msgData) {
         MessageDO message = null;
         //获取消息体
