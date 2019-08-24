@@ -57,7 +57,6 @@ public class MessageSendService {
      * @return Boolean
      */
     public Boolean senMessage(Message message) {
-        LOGGER.info("<<<<<======线程{}执行", Thread.currentThread().getName() + "-" + Thread.currentThread().getId());
         Map<String, Object> dataMap = new HashMap<>(8);
         String url;
         dataMap.put("SyncOtherMachine", message.getSyncOtherMachine());
