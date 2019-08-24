@@ -1,9 +1,6 @@
 package com.xuanrui.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xuanrui.common.core.model.result.BizException;
-import com.xuanrui.common.core.model.result.Result;
-import com.xuanrui.common.utils.ValidationUtils;
 import com.xuanrui.model.request.Message;
 import com.xuanrui.service.MessageSendService;
 import org.slf4j.Logger;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @Description: 消息
+ * @Description: 后台发送消息
  * @Author: gdc
  * @Date: 2019-08-19 09:51
  **/
@@ -39,19 +36,12 @@ public class MessageSendController {
      * @return Boolean
      */
     @RequestMapping(value = "senMessage", method = RequestMethod.POST)
-    public Result sendMessage(@RequestBody Message message) {
+    public Boolean sendMessage(@RequestBody Message message) {
         try {
-            ValidationUtils.validate(message);
-            if (messageSendService.senMessage(message)) {
-                return Result.createSuccess();
-            } else {
-                return Result.createBizError(0, "发送失败");
-            }
-        } catch (BizException b) {
-            return Result.createBizError(0, b.getMessage());
+            return messageSendService.senMessage(message);
         } catch (Exception e) {
-            LOGGER.error("<<<<====发送消息-失败 params:{} reason:{}", JSONObject.toJSONString(message), e);
-            return Result.createError();
+            LOGGER.error("<<<===后台发送消息-失败 params:{} reason:{}", JSONObject.toJSONString(message), e);
+            return false;
         }
     }
 }

@@ -57,7 +57,6 @@ public class MessageSendService {
      * @return Boolean
      */
     public Boolean senMessage(Message message) {
-        LOGGER.info("<<<<<======线程{}执行", Thread.currentThread().getName() + "-" + Thread.currentThread().getId());
         Map<String, Object> dataMap = new HashMap<>(8);
         String url;
         dataMap.put("SyncOtherMachine", message.getSyncOtherMachine());
@@ -87,7 +86,6 @@ public class MessageSendService {
         dataMap.put("MsgBody", msgBody(message));
 
         CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(url, dataMap), CommonResult.class);
-//        LOGGER.info(JSONObject.toJSONString(commonResult));
         if (commonResult == null || !commonResult.isSuccess()) {
             LOGGER.error("<<<===发送消息-失败 params:{} reason:{errorCode={} errorInfo={}}", JSONObject.toJSONString(dataMap), commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
             return false;
