@@ -44,6 +44,11 @@ public enum MessageType {
         public String getMessageType() {
             return "TIMFileElem";
         }
+    }, MSG_VIDEO(Byte.valueOf("8")) {
+        @Override
+        public String getMessageType() {
+            return "TIMVideoFileElem";
+        }
     }, MSG_OTHER(Byte.valueOf("8")) {
         @Override
         public String getMessageType() {

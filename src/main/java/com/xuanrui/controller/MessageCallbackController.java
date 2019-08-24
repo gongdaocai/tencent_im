@@ -87,12 +87,14 @@ public class MessageCallbackController {
         CallBackDataResult callBackResult = JSONObject.parseObject(msgData, CallBackDataResult.class);
         if (callBackResult != null) {
             message = new MessageDO();
+            //C2C个人消息 0
             message.setOpe((byte) 0);
             message.setMessageFrom(callBackResult.getFrom_Account());
             message.setMessageTo(callBackResult.getTo_Account());
             List<CallBackDataResult.MsgBody> msgBody = callBackResult.getMsgBody();
             //单一类型消息
             if (!CollectionUtils.isEmpty(msgBody) && msgBody.size() == 1) {
+                //必>=1
                 CallBackDataResult.MsgBody msg = msgBody.get(0);
                 MessageType msgType = MessageType.getMessageType(msg.getMsgType());
                 message.setType(msgType.getKey());
@@ -138,7 +140,11 @@ public class MessageCallbackController {
                         message.setUuid(msgContent.getUUID());
                         message.setTitle(msgContent.getFileName());
                         break;
-                    case MSG_OTHER:
+                    case MSG_VIDEO:
+                        message.setResourceUrl(msgContent.getVideoUrl());
+                        message.setSize(msgContent.getVideoSize());
+                        message.setDur(msgContent.getVideoSecond());
+                        message.setExt(msgContent.getVideoFormat());
                         break;
                     default:
                 }
