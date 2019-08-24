@@ -27,8 +27,8 @@ public class UserSigController {
     /**
      * 获取签名
      *
-     * @param phone
-     * @return
+     * @param phone 用户账号
+     * @return Result
      */
     @GetMapping(value = "getUserSig")
     public Result getUserSig(@RequestParam(value = "phone") String phone) {
