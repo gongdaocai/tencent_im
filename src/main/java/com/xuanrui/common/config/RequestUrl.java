@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
  * @Date: 2019-08-23 08:59
  **/
 @Service
-public class ServiceNameURL implements CommandLineRunner {
+public class RequestUrl implements CommandLineRunner {
     @Autowired
     private MyConfig myConfig;
     @Autowired
@@ -28,7 +28,7 @@ public class ServiceNameURL implements CommandLineRunner {
 
     private static String adminUserSig = "";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceNameURL.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUrl.class);
 
     public String getServiceUrl(ServiceName serviceName) {
         switch (serviceName) {
