@@ -11,7 +11,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
 import java.util.List;
-
+/**
+ * @Description: restTemplate
+ * @Author: gdc
+ * @Date: 2019-08-23 08:59
+ **/
 @Configuration
 public class RestTemplateConfig {
 

@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Properties;
 
 /**
- * mybatis分页插件配置类
- * @author jiayong.du
- * @date 2018/3/5 10:19
- */
+ * @Description: mybatis分页插件配置类
+ * @Author: gdc
+ * @Date: 2019-08-23 08:59
+ **/
 @Configuration
 public class MybatisConfig {
 

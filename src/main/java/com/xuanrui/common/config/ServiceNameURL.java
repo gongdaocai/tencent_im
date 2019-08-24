@@ -1,25 +1,34 @@
 package com.xuanrui.common.config;
 
 import com.xuanrui.common.TLSSigAPIv2;
-import com.xuanrui.common.TLSSigAPIv2;
 import com.xuanrui.common.constant.ServiceName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+/**
+ * @Description: 服务请求路径
+ * @Author: gdc
+ * @Date: 2019-08-23 08:59
+ **/
 @Service
-public class ServiceNameURL {
+public class ServiceNameURL implements CommandLineRunner {
     @Autowired
     private MyConfig myConfig;
     @Autowired
     private TLSSigAPIv2 tlsSigAPIv2;
     /**
-     * 过期时间 60*24*60*60
+     * 管理员签名过期时间 半年 180*24*60*60
      */
-    private static long expire = 5184000;
+    private static final long ADMIN_SIG_EXPIRE = 15552000;
 
-    private static String adminUserSig = "eJw1jtEKgjAYhd9l16H-plsqdCF6UVQQGImXo834EU3nGlH07onW5Tnf*eC8yflQePrZo9Ek4TQKAWA1l04bkhDmAVnyqBrZ96hIQqcRCwXEwUJQ6c5ijbMgVYsdjtZIezd-FW8TWZutrGhYZjv-5cqsKFrn1yZw*TEe0kuzr*CUX9OhelDY-ESL7XSLciE4C1gEny-sSTQb";
+    private static String adminUserSig = "";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceNameURL.class);
 
     public String getServiceUrl(ServiceName serviceName) {
         switch (serviceName) {
@@ -64,15 +73,27 @@ public class ServiceNameURL {
         }
     }
 
-    @Scheduled(cron = "0/5 * * * * ? ")//每5秒执行一次
- //   @Scheduled(cron = "0 10 0 1 * ?")
+    /**
+     * 定时更新管理员签名
+     * 每月最后一天执行一次
+     */
+    @Scheduled(cron = "0 59 23 L * ?")
     private void updateAdminSig() {
-        String sig = tlsSigAPIv2.genSig(myConfig.getAdministrator(), expire);
+        String sig = tlsSigAPIv2.genSig(myConfig.getAdministrator(), ADMIN_SIG_EXPIRE);
         if (!StringUtils.isEmpty(sig)) {
             adminUserSig = sig;
-//            System.out.println(adminUserSig);
+            LOGGER.info("<<<===定时更新管理员签名成功");
         }
     }
 
 
+    @Override
+    public void run(String... strings) {
+        LOGGER.info(">>>===项目启动初始化管理员签名开始");
+        String sig = tlsSigAPIv2.genSig(myConfig.getAdministrator(), ADMIN_SIG_EXPIRE);
+        if (!StringUtils.isEmpty(sig)) {
+            adminUserSig = sig;
+            LOGGER.info("<<<===项目启动初始化管理员签名完成");
+        }
+    }
 }
