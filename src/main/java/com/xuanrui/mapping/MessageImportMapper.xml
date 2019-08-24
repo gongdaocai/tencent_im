@@ -58,4 +58,4 @@
         values (#{phone}, #{nickName}, #{faceUrl})
     </insert>
 
-</mapper> 
+</mapper>

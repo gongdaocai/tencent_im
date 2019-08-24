@@ -1,5 +1,6 @@
 package com.xuanrui.common.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -15,7 +16,7 @@ import java.util.List;
 public class RestTemplateConfig {
 
     @Bean
-    public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
+    public RestTemplate restTemplate(@Qualifier("simpleClientHttpRequestFactory") ClientHttpRequestFactory factory) {
         RestTemplate restTemplate = new RestTemplate(factory);
         List<HttpMessageConverter<?>> converterList = restTemplate.getMessageConverters();
         //移除StringHttpMessageConverter
