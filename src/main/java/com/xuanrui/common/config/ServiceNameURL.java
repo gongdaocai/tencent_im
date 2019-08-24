@@ -75,9 +75,9 @@ public class ServiceNameURL implements CommandLineRunner {
 
     /**
      * 定时更新管理员签名
-     * 每月最后一天执行一次
+     * 每月15日23:59分运行。
      */
-    @Scheduled(cron = "0 59 23 L * ?")
+    @Scheduled(cron = "0 59 23 15 * ?")
     private void updateAdminSig() {
         String sig = tlsSigAPIv2.genSig(myConfig.getAdministrator(), ADMIN_SIG_EXPIRE);
         if (!StringUtils.isEmpty(sig)) {
