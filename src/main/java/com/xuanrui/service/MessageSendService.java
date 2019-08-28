@@ -152,7 +152,7 @@ public class MessageSendService {
                 Optional.ofNullable(message.getCustom()).orElseThrow(() -> new BizException(BusinessConstant.MSG_CONTENT_ERROR));
                 content.put("Data", message.getCustom());
                 if (message.getDesc() != null) {
-                    content.put("Desc", message.getCustom());
+                    content.put("Desc", message.getDesc());
                 }
                 if (message.getExt() != null) {
                     content.put("Ext", message.getExt());

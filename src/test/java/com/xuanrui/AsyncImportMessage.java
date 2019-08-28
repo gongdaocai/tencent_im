@@ -3,6 +3,7 @@ package com.xuanrui;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xuanrui.common.constant.MessageType;
 import com.xuanrui.dao.MessageImportDao;
 import com.xuanrui.model.request.Message;
 import com.xuanrui.model.request.UserAccount;
@@ -66,7 +67,11 @@ public class AsyncImportMessage {
                     for (Message message : messageList) {
                         try {
                             message.setSyncFromOldSystem((byte) 2);
-                            message.setType((byte) 1);
+                            if (message.getType() == 100) {
+                                message.setType(MessageType.MSG_CUSTOM.getKey());
+                            } else if (message.getType() == 0) {
+                                message.setType((byte) 1);
+                            }
                             parse = format.parse(message.getLocationDesc());
                             message.setMsgTimeStamp(parse.getTime() / 1000);
                             Future<Map<String, Object>> mapFuture = importMessage.importMessage(message);

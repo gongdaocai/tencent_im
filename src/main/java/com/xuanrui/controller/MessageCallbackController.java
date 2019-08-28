@@ -139,7 +139,7 @@ public class MessageCallbackController {
                         message.setUuid(msgContent.getUUID());
                         break;
                     case MSG_CUSTOM:
-                        message.setCustom(JSONObject.toJSONString(msgContent));
+                        message.setCustom(JSONObject.toJSONString(msgContent.getData()));
                         break;
                     case MSG_FILE:
                         message.setResourceUrl(msgContent.getUrl());
