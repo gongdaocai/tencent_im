@@ -3,7 +3,7 @@
 <mapper namespace="com.xuanrui.dao.MessageImportDao">
     <select id="listMessage" resultType="com.xuanrui.model.request.Message">
 
-        SELECT message_id messageId,message_from messageFrom, message_to messageTo, message_type type, TEXT text,custom
+        SELECT message_id messageId,message_from messageFrom, message_to messageTo, message_type type, TEXT text,custom,
         gmt_create locationDesc
         FROM t_chatlog_201908
         WHERE message_type in(0,100)
