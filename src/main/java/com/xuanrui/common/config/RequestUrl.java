@@ -31,46 +31,62 @@ public class RequestUrl implements CommandLineRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestUrl.class);
 
     public String getServiceUrl(ServiceName serviceName) {
+        String url = "";
         switch (serviceName) {
             //账号
             case ACCOUNT_IMPORT:
-                return "https://console.tim.qq.com/v4/im_open_login_svc/account_import?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/im_open_login_svc/account_import";
+                break;
             case ACCOUNT_IMPORT_BATCH:
-                return "https://console.tim.qq.com/v4/im_open_login_svc/multiaccount_import?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/im_open_login_svc/multiaccount_import";
+                break;
             case INFO_GET:
-                return "https://console.tim.qq.com/v4/profile/portrait_get?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/profile/portrait_get";
+                break;
             case INFO_SET:
-                return "https://console.tim.qq.com/v4/profile/portrait_set?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/profile/portrait_set";
+                break;
             case USER_STATE:
-                return "https://console.tim.qq.com/v4/openim/querystate?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/openim/querystate";
+                break;
 
             //消息发送
             case MSG_SEND:
-                return "https://console.tim.qq.com/v4/openim/sendmsg?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/openim/sendmsg";
+                break;
             case MSG_SEND_BATCH:
-                return "https://console.tim.qq.com/v4/openim/batchsendmsg?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/openim/batchsendmsg";
+                break;
             case MSG_IMPORT:
-                return "https://console.tim.qq.com/v4/openim/importmsg?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/openim/importmsg";
+                break;
 
             //好友
             case FRIEND_ADD:
-                return "https://console.tim.qq.com/v4/sns/friend_add?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/sns/friend_add";
+                break;
             case FRIEND_UPDATE:
-                return "https://console.tim.qq.com/v4/sns/friend_update?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/sns/friend_update";
+                break;
             case FRIEND_DELETE:
-                return "https://console.tim.qq.com/v4/sns/friend_delete?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/sns/friend_delete";
+                break;
             case FRIEND_DELETE_ALL:
-                return "https://console.tim.qq.com/v4/sns/friend_delete_all?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/sns/friend_delete_all";
+                break;
             case FRIEND_LIST:
-                return "https://console.tim.qq.com/v4/sns/friend_get?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/sns/friend_get";
+                break;
             case FRIEND_GET:
-                return "https://console.tim.qq.com/v4/sns/friend_get_list?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
+                url = "https://console.tim.qq.com/v4/sns/friend_get_list";
+                break;
             case FRIEND_CHECK:
-                return "https://console.tim.qq.com/v4/sns/friend_check  ?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
-
+                url = "https://console.tim.qq.com/v4/sns/friend_check";
+                break;
             default:
-                return "";
+                break;
         }
+        return url + "?sdkappid=" + myConfig.getAppId() + "&identifier=" + myConfig.getAdministrator() + "&usersig=" + adminUserSig + "&random=99999999&contenttype=json";
     }
 
     /**
