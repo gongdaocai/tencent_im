@@ -7,7 +7,7 @@
         gmt_create locationDesc
         FROM t_chatlog_201908
         WHERE message_type in(0,100)
-        AND message_from not in ('88000', '88100', '88200', '88300', '88400', '88001')
+        <!--AND message_from not in ('88000', '88100', '88200', '88300', '88400', '88001')-->
         <!-- AND gmt_create >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:%m:%s')-->
     </select>
     <insert id="saveErrorMessage">
