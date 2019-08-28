@@ -70,7 +70,7 @@ public class AsyncImportMessage {
                             if (message.getType() == 100) {
                                 message.setType(MessageType.MSG_CUSTOM.getKey());
                             } else if (message.getType() == 0) {
-                                message.setType((byte) 1);
+                                message.setType(MessageType.MSG_TEXT.getKey());
                             }
                             parse = format.parse(message.getLocationDesc());
                             message.setMsgTimeStamp(parse.getTime() / 1000);
