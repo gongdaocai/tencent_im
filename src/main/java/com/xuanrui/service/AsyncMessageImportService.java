@@ -3,7 +3,7 @@ package com.xuanrui.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.xuanrui.common.config.ServiceNameURL;
+import com.xuanrui.common.config.RequestUrl;
 import com.xuanrui.common.constant.BusinessConstant;
 import com.xuanrui.common.constant.ServiceName;
 import com.xuanrui.common.core.model.result.BizException;
@@ -38,7 +38,7 @@ public class AsyncMessageImportService {
     @Autowired
     HttpUtils httpUtils;
     @Autowired
-    private ServiceNameURL serviceNameURL;
+    private RequestUrl requestUrl;
     @Autowired
     private MessageSendService messageSendService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AsyncMessageImportService.class);
@@ -66,14 +66,14 @@ public class AsyncMessageImportService {
             if (jsonArray.size() > BusinessConstant.MAX_SEND_COUNT) {
                 throw new BizException(BusinessConstant.MSG_SEND_MAX_LIMIT);
             }
-            url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND_BATCH);
+            url = requestUrl.getServiceUrl(ServiceName.MSG_SEND_BATCH);
             dataMap.put("To_Account", jsonArray);
         } else {
             if (message.getMsgTimeStamp() != null && message.getSyncFromOldSystem() != null) {
-                url = serviceNameURL.getServiceUrl(ServiceName.MSG_IMPORT);
+                url = requestUrl.getServiceUrl(ServiceName.MSG_IMPORT);
                 dataMap.put("SyncFromOldSystem", message.getSyncFromOldSystem());
             } else {
-                url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND);
+                url = requestUrl.getServiceUrl(ServiceName.MSG_SEND);
             }
             dataMap.put("To_Account", message.getMessageTo());
         }
@@ -110,11 +110,11 @@ public class AsyncMessageImportService {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 throw new BizException(BusinessConstant.PARAMTER_EMTTY);
             }
-            serviceUrl = serviceNameURL.getServiceUrl(ServiceName.ACCOUNT_IMPORT_BATCH);
+            serviceUrl = requestUrl.getServiceUrl(ServiceName.ACCOUNT_IMPORT_BATCH);
             dataMap.put("Accounts", jsonArray);
         } else {
             Optional.ofNullable(userAccount.getNickName()).orElseThrow(() -> new BizException(BusinessConstant.PARAMTER_EMTTY));
-            serviceUrl = serviceNameURL.getServiceUrl(ServiceName.ACCOUNT_IMPORT);
+            serviceUrl = requestUrl.getServiceUrl(ServiceName.ACCOUNT_IMPORT);
 
             dataMap.put("Identifier", userAccount.getPhone());
             dataMap.put("Nick", userAccount.getNickName());

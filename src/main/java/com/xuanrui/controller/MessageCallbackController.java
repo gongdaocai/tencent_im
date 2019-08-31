@@ -55,16 +55,17 @@ public class MessageCallbackController {
         String msgData = null;
         try {
             CallBackResult callback = getQuery(request);
-            msgData = getBody(request);
             //验证应用id是否一致
             if (callback != null && callback.getCallBackCommand() != null && String.valueOf(myConfig.getAppId()).equals(callback.getSdkAppId())) {
                 MessageDO messageDO = null;
+                msgData = getBody(request);
                 //根据回调的类型分别解析消息数据
                 switch (CallBackType.getCallBackType(callback.getCallBackCommand())) {
                     case C2C_CallbackAfterSendMsg:
                         messageDO = parseData(msgData);
                         break;
                     case Group_CallbackBeforeSendMsg:
+                        //TODO 群组消息回调保存
                         break;
                     default:
                 }
@@ -81,18 +82,26 @@ public class MessageCallbackController {
         return CommonResult.createSuccess();
     }
 
+    /**
+     * 解析C2C单发回调消息体
+     *
+     * @param msgData 第三方回调数据
+     * @return 数据库DO
+     */
     private MessageDO parseData(String msgData) {
         MessageDO message = null;
         //获取消息体
         CallBackDataResult callBackResult = JSONObject.parseObject(msgData, CallBackDataResult.class);
         if (callBackResult != null) {
             message = new MessageDO();
+            //C2C个人消息 0
             message.setOpe((byte) 0);
             message.setMessageFrom(callBackResult.getFrom_Account());
             message.setMessageTo(callBackResult.getTo_Account());
             List<CallBackDataResult.MsgBody> msgBody = callBackResult.getMsgBody();
             //单一类型消息
             if (!CollectionUtils.isEmpty(msgBody) && msgBody.size() == 1) {
+                //必>=1
                 CallBackDataResult.MsgBody msg = msgBody.get(0);
                 MessageType msgType = MessageType.getMessageType(msg.getMsgType());
                 message.setType(msgType.getKey());
@@ -103,7 +112,7 @@ public class MessageCallbackController {
                         message.setText(msgContent.getText());
                         break;
                     case MSG_FACE:
-                        message.setIndex(msgContent.getIndex());
+                        message.setFaceIndex(msgContent.getIndex());
                         message.setTitle(msgContent.getData());
                         break;
                     case MSG_LOCATION:
@@ -130,13 +139,19 @@ public class MessageCallbackController {
                         message.setUuid(msgContent.getUUID());
                         break;
                     case MSG_CUSTOM:
-                        message.setCustom(JSONObject.toJSONString(msgContent));
+                        message.setCustom(msgContent.getData());
                         break;
                     case MSG_FILE:
                         message.setResourceUrl(msgContent.getUrl());
                         message.setSize(msgContent.getFileSize());
                         message.setUuid(msgContent.getUUID());
                         message.setTitle(msgContent.getFileName());
+                        break;
+                    case MSG_VIDEO:
+                        message.setResourceUrl(msgContent.getVideoUrl());
+                        message.setSize(msgContent.getVideoSize());
+                        message.setDur(msgContent.getVideoSecond());
+                        message.setExt(msgContent.getVideoFormat());
                         break;
                     default:
                 }
@@ -156,10 +171,10 @@ public class MessageCallbackController {
         if (queryString != null) {
             String[] split = queryString.split("&");
             String[] split1;
-            if (split != null && split.length > 0) {
+            if (split.length > 0) {
                 for (String s : split) {
                     split1 = s.split("=");
-                    if (split1 != null && split1.length == 2) {
+                    if (split1.length == 2) {
                         if ("CallbackCommand".endsWith(split1[0])) {
                             callBack.setCallBackCommand(split1[1]);
                         } else if ("SdkAppid".endsWith(split1[0])) {

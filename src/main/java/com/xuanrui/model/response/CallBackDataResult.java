@@ -137,6 +137,44 @@ public class CallBackDataResult {
         //自定义 APNs 推送铃音。
         private String Sound;
 
+        //视频消息
+        private String VideoUrl;
+        private Double VideoSize;
+        private Double VideoSecond;
+        private String VideoFormat;
+
+        public String getVideoUrl() {
+            return VideoUrl;
+        }
+
+        public void setVideoUrl(String videoUrl) {
+            VideoUrl = videoUrl;
+        }
+
+        public Double getVideoSize() {
+            return VideoSize;
+        }
+
+        public void setVideoSize(Double videoSize) {
+            VideoSize = videoSize;
+        }
+
+        public Double getVideoSecond() {
+            return VideoSecond;
+        }
+
+        public void setVideoSecond(Double videoSecond) {
+            VideoSecond = videoSecond;
+        }
+
+        public String getVideoFormat() {
+            return VideoFormat;
+        }
+
+        public void setVideoFormat(String videoFormat) {
+            VideoFormat = videoFormat;
+        }
+
         public void setUrl(String url) {
             Url = url;
         }

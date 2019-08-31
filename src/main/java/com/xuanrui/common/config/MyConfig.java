@@ -3,6 +3,11 @@ package com.xuanrui.common.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @Description: 配置
+ * @Author: gdc
+ * @Date: 2019-08-23 08:59
+ **/
 @Configuration
 @ConfigurationProperties(prefix = "myConfig")
 public class MyConfig {

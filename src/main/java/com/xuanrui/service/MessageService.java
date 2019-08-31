@@ -1,12 +1,11 @@
 package com.xuanrui.service;
 
 import com.xuanrui.common.utils.DateUtil;
-import com.xuanrui.common.utils.DateUtil;
 import com.xuanrui.dao.MessageDao;
-import com.xuanrui.model.dataobject.MessageDO;
 import com.xuanrui.model.dataobject.MessageDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @Description: 消息
@@ -28,6 +27,7 @@ public class MessageService {
      *
      * @param messageDO 消息DO
      */
+    @Transactional(rollbackFor = Exception.class)
     public void saveMessage(MessageDO messageDO) {
         messageDO.setGmtCreate(DateUtil.getNowDate());
         messageDao.saveMessage(messageDO);

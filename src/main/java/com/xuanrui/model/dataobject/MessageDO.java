@@ -53,7 +53,7 @@ public class MessageDO {
      */
     private Double dur;
     /**
-     * 地理位置标题
+     * 地理位置标题 或者 主题表情描述
      */
     private String title;
     /**
@@ -80,7 +80,7 @@ public class MessageDO {
     /**
      * 表情索引
      */
-    private Integer index;
+    private Integer faceIndex;
     /**
      * 文件序列号。后台用于索引语音的键值
      */
@@ -89,7 +89,7 @@ public class MessageDO {
     /**
      * 创建者
      */
-    private String gmtCreater;
+    private String gmtCreator;
     /**
      * 创建时间
      */
@@ -246,12 +246,12 @@ public class MessageDO {
         this.custom = custom;
     }
 
-    public Integer getIndex() {
-        return index;
+    public Integer getFaceIndex() {
+        return faceIndex;
     }
 
-    public void setIndex(Integer index) {
-        this.index = index;
+    public void setFaceIndex(Integer faceIndex) {
+        this.faceIndex = faceIndex;
     }
 
     public String getUuid() {
@@ -262,12 +262,12 @@ public class MessageDO {
         this.uuid = uuid;
     }
 
-    public String getGmtCreater() {
-        return gmtCreater;
+    public String getGmtCreator() {
+        return gmtCreator;
     }
 
-    public void setGmtCreater(String gmtCreater) {
-        this.gmtCreater = gmtCreater;
+    public void setGmtCreator(String gmtCreator) {
+        this.gmtCreator = gmtCreator;
     }
 
     public String getGmtCreate() {
@@ -276,6 +276,11 @@ public class MessageDO {
 
     public void setGmtCreate(String gmtCreate) {
         this.gmtCreate = gmtCreate;
+    }
+
+    @Override
+    public String toString() {
+        return "MessageDO{" + "messageId=" + messageId + ", ope=" + ope + ", type=" + type + ", text='" + text + '\'' + ", resourceUrl='" + resourceUrl + '\'' + ", w=" + w + ", h=" + h + ", size=" + size + ", ext='" + ext + '\'' + ", md5='" + md5 + '\'' + ", dur=" + dur + ", title='" + title + '\'' + ", lng=" + lng + ", lat=" + lat + ", messageFrom='" + messageFrom + '\'' + ", messageTo='" + messageTo + '\'' + ", custom='" + custom + '\'' + ", faceIndex=" + faceIndex + ", uuid='" + uuid + '\'' + ", gmtCreator='" + gmtCreator + '\'' + ", gmtCreate='" + gmtCreate + '\'' + ", isWatched=" + isWatched + '}';
     }
 }
     

@@ -3,7 +3,7 @@ package com.xuanrui.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.xuanrui.common.config.ServiceNameURL;
+import com.xuanrui.common.config.RequestUrl;
 import com.xuanrui.common.constant.AllowType;
 import com.xuanrui.common.constant.BusinessConstant;
 import com.xuanrui.common.constant.Gender;
@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -42,14 +41,14 @@ import java.util.stream.Collectors;
 @Service
 public class UserAccountService {
 
-    private ServiceNameURL serviceNameURL;
+    private RequestUrl requestUrl;
     private HttpUtils httpUtils;
     private MessageImportDao messageImportDao;
 
     @Autowired
-    public UserAccountService(ServiceNameURL serviceNameURL, HttpUtils httpUtils, MessageImportDao messageImportDao) {
+    public UserAccountService(RequestUrl requestUrl, HttpUtils httpUtils, MessageImportDao messageImportDao) {
         this.httpUtils = httpUtils;
-        this.serviceNameURL = serviceNameURL;
+        this.requestUrl = requestUrl;
         this.messageImportDao=messageImportDao;
     }
 
@@ -70,11 +69,11 @@ public class UserAccountService {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 throw new BizException(BusinessConstant.PARAMTER_EMTTY);
             }
-            serviceUrl = serviceNameURL.getServiceUrl(ServiceName.ACCOUNT_IMPORT_BATCH);
+            serviceUrl = requestUrl.getServiceUrl(ServiceName.ACCOUNT_IMPORT_BATCH);
             dataMap.put("Accounts", jsonArray);
         } else {
             Optional.ofNullable(userAccount.getNickName()).orElseThrow(() -> new BizException(BusinessConstant.PARAMTER_EMTTY));
-            serviceUrl = serviceNameURL.getServiceUrl(ServiceName.ACCOUNT_IMPORT);
+            serviceUrl = requestUrl.getServiceUrl(ServiceName.ACCOUNT_IMPORT);
 
             dataMap.put("Identifier", userAccount.getPhone());
             dataMap.put("Nick", userAccount.getNickName());
@@ -115,7 +114,7 @@ public class UserAccountService {
         tagList.add("Tag_Profile_IM_AllowType");
         tagList.add("Tag_Profile_IM_Image");
         dataMap.put("TagList", tagList);
-        UserInfoResult userInfoResult = JSONObject.parseObject(httpUtils.postForObject(serviceNameURL.getServiceUrl(ServiceName.INFO_GET), dataMap), UserInfoResult.class);
+        UserInfoResult userInfoResult = JSONObject.parseObject(httpUtils.postForObject(requestUrl.getServiceUrl(ServiceName.INFO_GET), dataMap), UserInfoResult.class);
         if (userInfoResult == null || !userInfoResult.isSuccess()) {
             LOGGER.error("<<<===获取用户信息-失败 params:{} reason:{errorCode={} errorInfo={}}", phone, userInfoResult.getErrorCode(), userInfoResult.getErrorInfo());
             throw new BizException("获取用户信息失败");
@@ -186,7 +185,7 @@ public class UserAccountService {
         }
 
         dataMap.put("ProfileItem", profileItemList);
-        CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(serviceNameURL.getServiceUrl(ServiceName.INFO_SET), dataMap), CommonResult.class);
+        CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(requestUrl.getServiceUrl(ServiceName.INFO_SET), dataMap), CommonResult.class);
         if (commonResult == null || !commonResult.isSuccess()) {
             LOGGER.error("<<<===更新用户信息-失败 params:{} reason:{errorCode={} errorInfo={}}", userAccount, commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
             return false;
@@ -206,7 +205,7 @@ public class UserAccountService {
         dataMap.put("StartIndex", 0);
         dataMap.put("StandardSequence", 0);
         dataMap.put("CustomSequence", 0);
-        FriendResult friendResult = JSONObject.parseObject(httpUtils.postForObject(serviceNameURL.getServiceUrl(ServiceName.FRIEND_LIST), dataMap), FriendResult.class);
+        FriendResult friendResult = JSONObject.parseObject(httpUtils.postForObject(requestUrl.getServiceUrl(ServiceName.FRIEND_LIST), dataMap), FriendResult.class);
         if (friendResult == null || !friendResult.isSuccess()) {
             LOGGER.error("<<<===获取用户信息-失败 params:{} reason:{errorCode={} errorInfo={}}", phone, friendResult == null ? "" : friendResult.getErrorCode(), friendResult == null ? "" : friendResult.getErrorInfo());
             throw new BizException("获取用户信息失败");
@@ -289,7 +288,7 @@ public class UserAccountService {
         dataMap.put("AddFriendItem", friendList);
         // dataMap.put("AddType",friend.getPhone());
 
-        CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(serviceNameURL.getServiceUrl(ServiceName.FRIEND_ADD), dataMap), CommonResult.class);
+        CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(requestUrl.getServiceUrl(ServiceName.FRIEND_ADD), dataMap), CommonResult.class);
         if (commonResult == null || !commonResult.isSuccess()) {
             LOGGER.error("<<<===添加好友-失败 params:{} reason:{errorCode={} errorInfo={}}", JSONObject.toJSONString(friend), commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
             return false;
@@ -316,7 +315,7 @@ public class UserAccountService {
         tagList.add("Tag_SNS_IM_Remark");
         tagList.add("Tag_SNS_IM_Group");
         dataMap.put("TagList", tagList);
-        FriendDetailResult detailResult = JSONObject.parseObject(httpUtils.postForObject(serviceNameURL.getServiceUrl(ServiceName.FRIEND_GET), dataMap), FriendDetailResult.class);
+        FriendDetailResult detailResult = JSONObject.parseObject(httpUtils.postForObject(requestUrl.getServiceUrl(ServiceName.FRIEND_GET), dataMap), FriendDetailResult.class);
         if (detailResult == null || !detailResult.isSuccess()) {
             LOGGER.error("<<<===获取指定用户好友-失败 params:{fromAccount={} toAccount={}} reason:{errorCode={} errorInfo={}}", fromAccount, toAccount, detailResult == null ? "" : detailResult.getErrorCode(), detailResult == null ? "" : detailResult.getErrorInfo());
             throw new BizException("获取好友信息失败");

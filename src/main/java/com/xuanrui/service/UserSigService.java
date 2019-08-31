@@ -17,7 +17,7 @@ public class UserSigService {
      * 时间单位：秒
      * 默认时间：7 x 24 x 60 x 60 = 604800 = 7 天
      */
-    public static final int EXPIRE_TIME = 31536000;
+    public static final int EXPIRE_TIME = 604800;
 
     /**
      * 获取签名

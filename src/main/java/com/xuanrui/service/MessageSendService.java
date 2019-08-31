@@ -2,7 +2,7 @@ package com.xuanrui.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.xuanrui.common.config.ServiceNameURL;
+import com.xuanrui.common.config.RequestUrl;
 import com.xuanrui.common.constant.BusinessConstant;
 import com.xuanrui.common.constant.MessageType;
 import com.xuanrui.common.constant.ServiceName;
@@ -34,15 +34,15 @@ import java.util.Optional;
 @Service
 public class MessageSendService {
 
-    private ServiceNameURL serviceNameURL;
+    private RequestUrl requestUrl;
     private HttpUtils httpUtils;
     private MessageDao messageDao;
     private UserAccountService userAccountService;
 
     @Autowired
-    public MessageSendService(ServiceNameURL serviceNameURL, HttpUtils httpUtils, MessageDao messageDao, UserAccountService userAccountService) {
+    public MessageSendService(RequestUrl requestUrl, HttpUtils httpUtils, MessageDao messageDao, UserAccountService userAccountService) {
         this.httpUtils = httpUtils;
-        this.serviceNameURL = serviceNameURL;
+        this.requestUrl = requestUrl;
         this.messageDao = messageDao;
         this.userAccountService = userAccountService;
     }
@@ -69,14 +69,14 @@ public class MessageSendService {
             if (jsonArray.size() > BusinessConstant.MAX_SEND_COUNT) {
                 throw new BizException(BusinessConstant.MSG_SEND_MAX_LIMIT);
             }
-            url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND_BATCH);
+            url = requestUrl.getServiceUrl(ServiceName.MSG_SEND_BATCH);
             dataMap.put("To_Account", jsonArray);
         } else {
             if (message.getMsgTimeStamp() != null && message.getSyncFromOldSystem() != null) {
-                url = serviceNameURL.getServiceUrl(ServiceName.MSG_IMPORT);
+                url = requestUrl.getServiceUrl(ServiceName.MSG_IMPORT);
                 dataMap.put("SyncFromOldSystem", message.getSyncFromOldSystem());
             } else {
-                url = serviceNameURL.getServiceUrl(ServiceName.MSG_SEND);
+                url = requestUrl.getServiceUrl(ServiceName.MSG_SEND);
             }
             dataMap.put("To_Account", message.getMessageTo());
         }
@@ -86,7 +86,6 @@ public class MessageSendService {
         dataMap.put("MsgBody", msgBody(message));
 
         CommonResult commonResult = JSONObject.parseObject(httpUtils.postForObject(url, dataMap), CommonResult.class);
-//        LOGGER.info(JSONObject.toJSONString(commonResult));
         if (commonResult == null || !commonResult.isSuccess()) {
             LOGGER.error("<<<===发送消息-失败 params:{} reason:{errorCode={} errorInfo={}}", JSONObject.toJSONString(dataMap), commonResult == null ? "" : commonResult.getErrorCode(), commonResult == null ? "" : commonResult.getErrorInfo());
             return false;
@@ -153,7 +152,7 @@ public class MessageSendService {
                 Optional.ofNullable(message.getCustom()).orElseThrow(() -> new BizException(BusinessConstant.MSG_CONTENT_ERROR));
                 content.put("Data", message.getCustom());
                 if (message.getDesc() != null) {
-                    content.put("Desc", message.getCustom());
+                    content.put("Desc", message.getDesc());
                 }
                 if (message.getExt() != null) {
                     content.put("Ext", message.getExt());
