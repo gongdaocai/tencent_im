@@ -221,4 +221,95 @@ public class AsyncImportMessage {
         LOGGER.info("<<<====同步结束 耗时{}秒", (System.currentTimeMillis() - start) / 1000);
     }
 
+
+
+    @Test
+    public void importUserFriend() {
+        List<UserAccount> userAccountList;
+        Long start = System.currentTimeMillis();
+        List<String> successList;
+        List<String> errorList;
+        int total = 0;
+        int errorTotal = 0;
+        int successTotal = 0;
+        List<Future<Map<String, Object>>> futures;
+        Map<String, Object> longBooleanMap;
+        PageInfo pageInfo;
+        boolean flag = true;
+        int pageNum = 1;
+        try {
+            while (flag) {
+                PageHelper.startPage(pageNum, 500);
+                userAccountList = messageImportDao.listUserInfo();
+                if (!CollectionUtils.isEmpty(userAccountList)) {
+                    countDownLatch = new CountDownLatch(userAccountList.size());
+                    futures = new ArrayList<>();
+                    successList = new ArrayList<>();
+                    errorList = new ArrayList<>();
+                    pageInfo = new PageInfo(userAccountList);
+
+                    for (UserAccount account : userAccountList) {
+                        try {
+                            Future<Map<String, Object>> mapFuture = importMessage.createAccount(account);
+                            futures.add(mapFuture);
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===第{}页数据--同步失败 用户:{} reason:{}", pageNum, JSONObject.toJSON(account), e);
+                            errorList.add(account.getPhone());
+                        } finally {
+                            countDownLatch.countDown();
+                        }
+                    }
+
+                    countDownLatch.await();
+                    //批量处理本次结果
+
+                    for (Future<Map<String, Object>> future : futures) {
+                        try {
+                            longBooleanMap = future.get();
+                            if ((Boolean) longBooleanMap.get("success")) {
+                                successList.add((String) longBooleanMap.get("phone"));
+                            } else {
+                                LOGGER.error("<<<===第{}页数据--同步失败 用户:{} reason:{}", pageNum, longBooleanMap.get("id"), "查第三方返回返回日志");
+                                errorList.add((String) longBooleanMap.get("phone"));
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===第{}页数据--批量处理结果失败 reason:{}", pageNum, e);
+                        }
+                    }
+                    LOGGER.info("<<<===第{}页数据--同步结束 同步用户总数 :{} 同步失败总数:{}", pageNum, userAccountList.size(), errorList.size());
+                    //输出到文件
+                    if (!CollectionUtils.isEmpty(errorList)) {
+                        try {
+                            messageImportDao.saveErrorUser(errorList);
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===第{}页数据--保存同步失败数据--失败 errorList:{}", pageNum, JSONObject.toJSON(errorList), e);
+                        }
+                    }
+                    if (!CollectionUtils.isEmpty(successList)) {
+                        try {
+                            messageImportDao.saveSuccessUser(successList);
+                        } catch (Exception e) {
+                            LOGGER.error("<<<===-第{}页数据--保存同步成功数据--失败 errorList:{}", pageNum, JSONObject.toJSON(successList), e);
+                        }
+                    }
+                    total = total + userAccountList.size();
+                    errorTotal = errorTotal + errorList.size();
+                    successTotal = successTotal + successList.size();
+                    if (pageInfo.isHasNextPage()) {
+                        pageNum = pageInfo.getNextPage();
+                    } else {
+                        flag = false;
+                    }
+
+                } else {
+                    flag = false;
+                }
+            }
+            LOGGER.info("<<<===所有数据--同步结束 同步用户总数 :{} 同步成功总数:{} 同步失败总数:{}", total, successTotal, errorTotal);
+        } catch (Exception e) {
+            LOGGER.error("<<<<=====同步用户数据-失败 reason:{}", e);
+        }
+        LOGGER.info("<<<====同步结束 耗时{}秒", (System.currentTimeMillis() - start) / 1000);
+    }
+
 }
